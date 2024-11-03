@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Globe, ChevronDown } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown, Globe } from 'lucide-react'
 
 const products = [
   {
@@ -14,10 +14,11 @@ const products = [
     },
     color: 'bg-gray-900',
     textColor: 'text-white',
+    images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
     features: [
-      { ko: '컴팩트한 디자인', en: 'Compact design' },
-      { ko: '내장 배터리', en: 'Built-in battery' },
-      { ko: '블루투스 연결', en: 'Bluetooth connectivity' },
+      { ko: '높은 보안성', en: 'High security' },
+      { ko: '사용자 친화적 인터페이스', en: 'User-friendly interface' },
+      { ko: '다중 암호화폐 지원', en: 'Multi-cryptocurrency support' },
     ],
   },
   {
@@ -29,10 +30,11 @@ const products = [
     },
     color: 'bg-orange-500',
     textColor: 'text-white',
+    images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
     features: [
-      { ko: '에어갭 보안', en: 'Air-gapped security' },
-      { ko: 'QR 코드 통신', en: 'QR code communication' },
+      { ko: '완전한 오프라인 작동', en: 'Fully offline operation' },
       { ko: '저렴한 구축 비용', en: 'Low-cost build' },
+      { ko: '커스터마이징 가능', en: 'Customizable' },
     ],
   },
   {
@@ -44,15 +46,29 @@ const products = [
     },
     color: 'bg-blue-600',
     textColor: 'text-white',
+    images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
     features: [
       { ko: '내구성 있는 소재', en: 'Durable material' },
-      { ko: '방수 기능', en: 'Water-resistant' },
-      { ko: '암호화된 저장', en: 'Encrypted storage' },
+      { ko: '방수 및 방화 기능', en: 'Water and fire resistant' },
+      { ko: '간편한 복구 프로세스', en: 'Easy recovery process' },
     ],
   },
 ]
 
 const ProductPage = ({ product, lang, isVisible }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? product.images.length - 1 : prev - 1
+    );
+  };
+
   const scrollToFeatures = () => {
     window.scrollTo({
       top: window.innerHeight / 2,
@@ -80,13 +96,43 @@ const ProductPage = ({ product, lang, isVisible }) => {
                 {lang === 'ko' ? '자세히 보기' : 'Learn More'}
               </button>
             </div>
-            <div className="md:flex-1 flex justify-center md:justify-end">
-              <div className="w-64 h-64 md:w-96 md:h-96 bg-white rounded-lg shadow-lg">
+            
+            <div 
+              className="md:flex-1 flex justify-center md:justify-end relative"
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              <div className="w-64 h-64 md:w-[448px] md:h-[448px] bg-white rounded-lg shadow-lg relative overflow-hidden">
                 <motion.div
                   className="w-full h-full"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                />
+                >
+                  <img 
+                    src={product.images[currentImageIndex]} 
+                    alt={product.name[lang]}
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+
+                {isHovering && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 
+                        bg-white/80 p-2 rounded-full hover:bg-white transition-colors"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 
+                        bg-white/80 p-2 rounded-full hover:bg-white transition-colors"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -194,29 +240,29 @@ export function EnhancedProductShowcase() {
       </motion.button>
 
       <motion.div
-  initial={{ opacity: 0, y: -20 }}
-  animate={{ opacity: 1, y: 0 }}
-  className="fixed top-20 left-0 right-0 z-10 mx-auto flex justify-center px-4"
->
-  <nav className="bg-transparent">
-    <ul className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-      {products.map((product, index) => (
-        <li key={product.id}>
-          <motion.button
-            onClick={() => setCurrentIndex(index)}
-            whileHover={{ scale: 1.05 }}
-            className={`px-4 py-2 rounded-full transition-colors duration-300 w-full md:w-auto
-              ${currentIndex === index 
-                ? 'bg-white text-gray-800' 
-                : `${product.textColor} border border-white`}`}
-          >
-            {product.name[lang]}
-          </motion.button>
-        </li>
-      ))}
-    </ul>
-  </nav>
-</motion.div>
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="fixed top-16 left-0 right-0 z-10 mx-auto flex justify-center px-4"
+      >
+        <nav className="bg-transparent">
+          <ul className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+            {products.map((product, index) => (
+              <li key={product.id}>
+                <motion.button
+                  onClick={() => setCurrentIndex(index)}
+                  whileHover={{ scale: 1.05 }}
+                  className={`px-4 py-2 rounded-full transition-colors duration-300 w-full md:w-auto
+                    ${currentIndex === index 
+                      ? 'bg-white text-gray-800' 
+                      : `${product.textColor} border border-white`}`}
+                >
+                  {product.name[lang]}
+                </motion.button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </motion.div>
 
       <AnimatePresence mode="wait">
         <motion.div
